@@ -1,8 +1,6 @@
 package artifactory
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/jfrog/jfrog-client-go/artifactory/auth"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	rthttpclient "github.com/jfrog/jfrog-client-go/artifactory/httpclient"
@@ -24,41 +22,31 @@ type CreateTokenBody struct {
 	Username string
 }
 
-type TokenService struct {
-	client     *rthttpclient.ArtifactoryHttpClient
-	ArtDetails auth.ArtifactoryDetails
-}
-
-func (ds *TokenService) getArtifactoryDetails() auth.ArtifactoryDetails {
-	return ds.ArtDetails
-}
-
-func NewTokenService(client *rthttpclient.ArtifactoryHttpClient) *TokenService {
-	return &TokenService{client: client}
-}
-
 func (sm *ArtifactoryServicesManager) CreateToken() {
-	data := CreateTokenBody{
-		Scope:    "api:* member-of-groups:readers",
-		Username: "anonymous",
-	}
-	requestContent, err := json.Marshal(data)
-	if err != nil {
-		fmt.Print(err)
-	}
-	service := NewTokenService(sm.client)
-	httpClientsDetails := service.getArtifactoryDetails().CreateHttpClientDetails()
-	resp, body, err := sm.client.SendPost(
-		"http://taylorl:AKCp5dLXKKNkpUwWpUeCJC5FiM7UxB3qxQ5AzNNvRR4U6oKp6cJuCRr1Go4Et3UzxudiXmEqp@34.83.248.73/artifactory/api/security/token",
-		requestContent,
-		&httpClientsDetails,
-	)
-	if err != nil {
-		fmt.Print(err)
-	}
-	fmt.Println("testing")
-	fmt.Printf("%+v\n", resp)
-	fmt.Printf("%+v\n", body)
+	//service := NewTokenService(sm.client)
+	//data := CreateTokenBody{
+	//	Scope:    "api:* member-of-groups:readers",
+	//	Username: "anonymous",
+	//}
+	//requestContent, err := json.Marshal(data)
+	//if err != nil {
+	//	fmt.Print(err)
+	//}
+	service := services.NewTokenService(sm.client)
+	service.DryRun = sm.config.IsDryRun()
+	service.ArtDetails = sm.config.GetArtDetails()
+	service.CreateToken()
+	//resp, body, err := service.client.SendPost(
+	//	"http://taylorl:AKCp5dLXKKNkpUwWpUeCJC5FiM7UxB3qxQ5AzNNvRR4U6oKp6cJuCRr1Go4Et3UzxudiXmEqp@34.83.248.73/artifactory/api/security/token",
+	//	requestContent,
+	//	&httpClientsDetails,
+	//)
+	//if err != nil {
+	//	fmt.Print(err)
+	//}
+	//fmt.Println("testing")
+	//fmt.Printf("%+v\n", resp)
+	//fmt.Printf("%+v\n", body)
 }
 
 func New(artDetails *auth.ArtifactoryDetails, config Config) (*ArtifactoryServicesManager, error) {
