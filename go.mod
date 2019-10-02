@@ -22,6 +22,7 @@ require (
 	github.com/nwaples/rardecode v0.0.0-20171029023500-e06696f847ae // indirect
 	github.com/pelletier/go-buffruneio v0.2.0 // indirect
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
+	github.com/pkg/errors v0.8.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/spf13/viper v1.2.1
@@ -36,3 +37,5 @@ require (
 	gopkg.in/src-d/go-git.v4 v4.7.0
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
+
+go 1.13
