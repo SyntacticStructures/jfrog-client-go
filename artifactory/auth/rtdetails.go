@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/jfrog/jfrog-client-go/httpclient"
 	"github.com/jfrog/jfrog-client-go/utils"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
@@ -101,6 +102,7 @@ func (rt *artifactoryDetails) GetSshAuthHeaders() map[string]string {
 }
 
 func (rt *artifactoryDetails) SetUrl(url string) {
+	fmt.Print("this is a test")
 	rt.Url = url
 }
 
