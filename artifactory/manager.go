@@ -200,6 +200,12 @@ func (sm *ArtifactoryServicesManager) GetBuildInfo(params services.BuildInfoPara
 	return buildInfoService.GetBuildInfo(params)
 }
 
+func (sm *ArtifactoryServicesManager) CreateToken(params services.CreateTokenParams) (services.CreateTokenResponseData, error) {
+	tokenService := services.NewTokenService(sm.client)
+	tokenService.ArtDetails = sm.config.GetArtDetails()
+	return tokenService.CreateToken(params)
+}
+
 func (sm *ArtifactoryServicesManager) Client() *rthttpclient.ArtifactoryHttpClient {
 	return sm.client
 }
