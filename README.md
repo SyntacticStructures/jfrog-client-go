@@ -11,6 +11,15 @@
 The project is still relatively new, and its APIs may therefore change frequently between releases.
 The library can be used as a go-module, which should be added to your project's go.mod file. As a reference you may look at [JFrog CLI](https://github.com/jfrog/jfrog-cli-go)'s [go.mod](https://github.com/jfrog/jfrog-cli-go/blob/master/go.mod) file, which uses this library as a dependency.
 
+## Pull Requests
+We welcome pull requests from the community.
+
+### Guidelines
+* Before creating your first pull request, please join our contributors community by signing [JFrog's CLA](https://secure.echosign.com/public/hostedForm?formid=5IYKLZ2RXB543N).
+* If the existing tests do not already cover your changes, please add tests.
+* Pull requests should be created on the **dev** branch.
+* Please use gofmt for formatting the code before submitting the pull request.
+
 ## General APIs
 ### Set logger
 ```
@@ -256,6 +265,43 @@ The default temp dir used is  'os.TempDir()'. Use the following API to set a new
     rtManager.ReadRemoteFile(FilePath string)
 ```
 
+#### Creating an access token
+```
+    params := services.NewCreateTokenParams()
+    params.Scope = "api:* member-of-groups:readers"
+    params.Username = "user"
+    params.ExpiresIn = 3600
+    params.GrantType = "client_credentials"
+    params.Refreshable = true
+    params.Audience = "jfrt@<serviceID1> jfrt@<serviceID2>"
+    results, err := rtManager.CreateToken(params)
+```
+
+#### Fetching access tokens
+```
+    results, err := rtManager.GetTokens()
+```
+
+#### Refreshing an access token
+```
+    params := services.NewRefreshTokenParams()
+    params.AccessToken = "<access token>"
+    params.RefreshToken = "<refresh token>"
+    params.Token.Scope = "api:*"
+    params.Token.ExpiresIn = 3600
+    results, err := rtManager.RefreshToken(params)
+```
+
+#### Revoking an access token
+```
+    params := services.NewRevokeTokenParams()
+
+    // Provide either TokenId or Token
+    params.TokenId = "<token id>"
+    // params.Token = "access token"
+
+    err := rtManager.RevokeToken(params)
+```
 
 ## Bintray APIs
 ### Creating Bintray Details
@@ -290,6 +336,7 @@ The default temp dir used is  'os.TempDir()'. Use the following API to set a new
     params.Override = false
     params.Explode = false
     params.UseRegExp = false
+    params.ShowInDownloadList = false
     
     btManager.UploadFiles(params)
 ```

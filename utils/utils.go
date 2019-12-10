@@ -4,23 +4,27 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/jfrog/jfrog-client-go/utils/errorutils"
-	"github.com/jfrog/jfrog-client-go/utils/log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/jfrog/jfrog-client-go/utils/errorutils"
+	"github.com/jfrog/jfrog-client-go/utils/log"
 )
 
 const (
 	Development = "development"
+	Agent       = "jfrog-client-go"
+	Version     = "0.5.8"
 )
 
 var userAgent = getDefaultUserAgent()
 
 func getVersion() string {
-	return "0.1.0"
+	return Version
 }
 
 func GetUserAgent() string {
@@ -32,7 +36,7 @@ func SetUserAgent(newUserAgent string) {
 }
 
 func getDefaultUserAgent() string {
-	return fmt.Sprintf("jfrog-client-go/%s", getVersion())
+	return fmt.Sprintf("%s/%s", Agent, getVersion())
 }
 
 // Get the local root path, from which to start collecting artifacts to be used for:
@@ -129,9 +133,21 @@ func PrepareLocalPathForUpload(localPath string, useRegExp bool) string {
 		localPath = localPath[3:]
 	}
 	if !useRegExp {
-		localPath = pathToRegExp(localPath)
+		localPath = pathToRegExp(cleanPath(localPath))
 	}
 	return localPath
+}
+
+// Clean /../ | /./ using filepath.Clean.
+func cleanPath(path string) string {
+	temp := path[len(path)-1:]
+	path = filepath.Clean(path)
+	if temp == `\` || temp == "/" {
+		path += temp
+	}
+	// Since filepath.Clean replaces \\ with \, we revert this action.
+	path = strings.Replace(path, `\`, `\\`, -1)
+	return path
 }
 
 func pathToRegExp(localPath string) string {
@@ -160,6 +176,7 @@ func BuildTargetPath(pattern, path, target string, ignoreRepo bool) (string, err
 		pattern = removeRepoFromPath(pattern)
 		path = removeRepoFromPath(path)
 	}
+	pattern = AddEscapingParentheses(pattern, target)
 	pattern = pathToRegExp(pattern)
 	r, err := regexp.Compile(pattern)
 	err = errorutils.CheckError(err)
